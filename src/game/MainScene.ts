@@ -35,6 +35,7 @@ export class MainScene extends Phaser.Scene {
   private onGameOver: () => void
   private background!: Phaser.GameObjects.TileSprite
   private mountains!: Phaser.GameObjects.TileSprite
+  private playerDirection: 'left' | 'right' = 'right' // Track player direction
 
   constructor(
     onScoreUpdate: (score: number) => void,
@@ -89,6 +90,9 @@ export class MainScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true)
     this.player.setTint(0xff0000) // Red tint for Iron Man
 
+    // Set initial animation
+    this.player.anims.play('turn')
+
     // Camera follows player
     this.cameras.main.setBounds(0, 0, 3200, 600)
     this.cameras.main.startFollow(this.player, true, 0.08, 0.08)
@@ -113,9 +117,11 @@ export class MainScene extends Phaser.Scene {
     })
 
     this.coins.children.iterate((child) => {
-      const coin = child as Phaser.Physics.Arcade.Image
-      coin.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
-      coin.setY(Phaser.Math.Between(150, 400))
+      if (child) {
+        const coin = child as Phaser.Physics.Arcade.Image
+        coin.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
+        coin.setY(Phaser.Math.Between(150, 400))
+      }
       return true
     })
 
@@ -154,12 +160,15 @@ export class MainScene extends Phaser.Scene {
     if (this.controls.left.isDown || this.controls.a.isDown) {
       this.player.setVelocityX(-160)
       this.player.anims.play('left', true)
+      this.playerDirection = 'left'
     } else if (this.controls.right.isDown || this.controls.d.isDown) {
       this.player.setVelocityX(160)
       this.player.anims.play('right', true)
+      this.playerDirection = 'right'
     } else {
       this.player.setVelocityX(0)
       this.player.anims.play('turn')
+      // Don't change playerDirection here to keep the last direction
     }
 
     // Jump
@@ -180,16 +189,18 @@ export class MainScene extends Phaser.Scene {
 
     // Move enemies
     this.enemies.children.iterate((enemy) => {
-      const e = enemy as Phaser.Physics.Arcade.Sprite
-      if (e.getData('direction') === 'left') {
-        e.setVelocityX(-100)
-        if (e.x < e.getData('startX') - 100) {
-          e.setData('direction', 'right')
-        }
-      } else {
-        e.setVelocityX(100)
-        if (e.x > e.getData('startX') + 100) {
-          e.setData('direction', 'left')
+      if (enemy) {
+        const e = enemy as Phaser.Physics.Arcade.Sprite
+        if (e.getData('direction') === 'left') {
+          e.setVelocityX(-100)
+          if (e.x < e.getData('startX') - 100) {
+            e.setData('direction', 'right')
+          }
+        } else {
+          e.setVelocityX(100)
+          if (e.x > e.getData('startX') + 100) {
+            e.setData('direction', 'left')
+          }
         }
       }
       return true
@@ -243,8 +254,10 @@ export class MainScene extends Phaser.Scene {
     if (this.coins.countActive(true) === 0) {
       // Respawn coins
       this.coins.children.iterate((child) => {
-        const c = child as Phaser.Physics.Arcade.Image
-        c.enableBody(true, c.x, 0, true, true)
+        if (child) {
+          const c = child as Phaser.Physics.Arcade.Image
+          c.enableBody(true, c.x, 0, true, true)
+        }
         return true
       })
     }
@@ -289,8 +302,8 @@ export class MainScene extends Phaser.Scene {
     repulsor.setVisible(true)
     repulsor.setTint(0x00ffff) // Cyan tint for repulsor
     
-    // Direction based on player facing
-    const direction = this.player.anims.currentAnim.key === 'left' ? -1 : 1
+    // Use tracked player direction instead of animation
+    const direction = this.playerDirection === 'left' ? -1 : 1
     repulsor.setVelocityX(direction * 600)
     
     // Add glow effect
@@ -300,8 +313,10 @@ export class MainScene extends Phaser.Scene {
     
     // Destroy after 1 second
     this.time.delayedCall(1000, () => {
-      repulsor.setActive(false)
-      repulsor.setVisible(false)
+      if (repulsor && repulsor.active) {
+        repulsor.setActive(false)
+        repulsor.setVisible(false)
+      }
     })
   }
 
@@ -327,9 +342,11 @@ export class MainScene extends Phaser.Scene {
         
         // Respawn enemy after delay
         this.time.delayedCall(3000, () => {
-          enemy.enableBody(true, enemy.getData('startX'), 0, true, true)
-          enemy.alpha = 1
-          enemy.setScale(1)
+          if (enemy) {
+            enemy.enableBody(true, enemy.getData('startX'), 0, true, true)
+            enemy.alpha = 1
+            enemy.setScale(1)
+          }
         })
       }
     })

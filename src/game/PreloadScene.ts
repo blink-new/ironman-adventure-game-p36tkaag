@@ -75,27 +75,33 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    // Create animations
-    this.anims.create({
-      key: 'left',
-      frames: this.anims.generateFrameNumbers('ironman', { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1
-    })
+    try {
+      // Create animations
+      this.anims.create({
+        key: 'left',
+        frames: this.anims.generateFrameNumbers('ironman', { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: -1
+      })
 
-    this.anims.create({
-      key: 'turn',
-      frames: [ { key: 'ironman', frame: 4 } ],
-      frameRate: 20
-    })
+      this.anims.create({
+        key: 'turn',
+        frames: [ { key: 'ironman', frame: 4 } ],
+        frameRate: 20
+      })
 
-    this.anims.create({
-      key: 'right',
-      frames: this.anims.generateFrameNumbers('ironman', { start: 5, end: 8 }),
-      frameRate: 10,
-      repeat: -1
-    })
+      this.anims.create({
+        key: 'right',
+        frames: this.anims.generateFrameNumbers('ironman', { start: 5, end: 8 }),
+        frameRate: 10,
+        repeat: -1
+      })
 
-    this.scene.start('MainScene')
+      this.scene.start('MainScene')
+    } catch (error) {
+      console.error('Error creating animations:', error)
+      // Still try to start the main scene even if animations fail
+      this.scene.start('MainScene')
+    }
   }
 }

@@ -32,6 +32,22 @@ function App() {
     setGameOver(true)
   }
 
+  // Add a key listener for F key to prevent default browser behavior
+  useEffect(() => {
+    const preventDefaultForGameKeys = (e: KeyboardEvent) => {
+      // Prevent default for game control keys
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'f', 'F', ' '].includes(e.key)) {
+        e.preventDefault()
+      }
+    }
+    
+    window.addEventListener('keydown', preventDefaultForGameKeys)
+    
+    return () => {
+      window.removeEventListener('keydown', preventDefaultForGameKeys)
+    }
+  }, [])
+
   return (
     <div className="game-app">
       {!gameStarted || gameOver ? (

@@ -16,35 +16,43 @@ const GameContainer = ({ onScoreUpdate, onLivesUpdate, onGameOver }: GameContain
 
   useEffect(() => {
     if (containerRef.current && !gameRef.current) {
-      const config: Phaser.Types.Core.GameConfig = {
-        type: Phaser.AUTO,
-        width: 800,
-        height: 600,
-        parent: containerRef.current,
-        physics: {
-          default: 'arcade',
-          arcade: {
-            gravity: { y: 800 },
-            debug: false
+      try {
+        const config: Phaser.Types.Core.GameConfig = {
+          type: Phaser.AUTO,
+          width: 800,
+          height: 600,
+          parent: containerRef.current,
+          physics: {
+            default: 'arcade',
+            arcade: {
+              gravity: { y: 800 },
+              debug: false
+            }
+          },
+          scene: [
+            new PreloadScene(), 
+            new MainScene(onScoreUpdate, onLivesUpdate, onGameOver)
+          ],
+          pixelArt: true,
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH
           }
-        },
-        scene: [
-          new PreloadScene(), 
-          new MainScene(onScoreUpdate, onLivesUpdate, onGameOver)
-        ],
-        pixelArt: true,
-        scale: {
-          mode: Phaser.Scale.FIT,
-          autoCenter: Phaser.Scale.CENTER_BOTH
         }
-      }
 
-      gameRef.current = new Phaser.Game(config)
+        gameRef.current = new Phaser.Game(config)
+      } catch (error) {
+        console.error('Error initializing Phaser game:', error)
+      }
     }
 
     return () => {
       if (gameRef.current) {
-        gameRef.current.destroy(true)
+        try {
+          gameRef.current.destroy(true)
+        } catch (error) {
+          console.error('Error destroying Phaser game:', error)
+        }
         gameRef.current = null
       }
     }
