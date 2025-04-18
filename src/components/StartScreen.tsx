@@ -1,75 +1,100 @@
 
-import { useEffect, useState } from 'react'
-import { Button } from '../components/ui/button'
 import { motion } from 'framer-motion'
+import { Button } from './ui/button'
+import { Candy } from 'lucide-react'
+import './StartScreen.css'
 
 interface StartScreenProps {
   onStart: () => void
-  score: number
-  gameOver: boolean
 }
 
-const StartScreen = ({ onStart, score, gameOver }: StartScreenProps) => {
-  const [highScore, setHighScore] = useState(0)
-
-  useEffect(() => {
-    const savedHighScore = localStorage.getItem('ironman-highscore')
-    if (savedHighScore) {
-      setHighScore(parseInt(savedHighScore))
-    }
-
-    if (gameOver && score > highScore) {
-      setHighScore(score)
-      localStorage.setItem('ironman-highscore', score.toString())
-    }
-  }, [gameOver, score, highScore])
-
+const StartScreen = ({ onStart }: StartScreenProps) => {
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full bg-gradient-to-b from-blue-900 to-black text-white p-4">
+    <div className="start-screen">
       <motion.div 
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+        className="start-content"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-center"
       >
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 text-red-500 drop-shadow-[0_0_10px_rgba(255,0,0,0.7)]">
-          IRON MAN
-        </h1>
-        <h2 className="text-3xl md:text-4xl font-bold mb-8 text-yellow-400">
-          ADVENTURE
-        </h2>
-
-        {gameOver && (
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mb-8"
-          >
-            <h3 className="text-2xl font-bold mb-2">GAME OVER</h3>
-            <p className="text-xl mb-1">Your Score: <span className="text-yellow-400">{score}</span></p>
-            <p className="text-lg">High Score: <span className="text-yellow-400">{highScore}</span></p>
-          </motion.div>
-        )}
-
         <motion.div
+          className="logo-container"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.2 }}
+        >
+          <Candy className="candy-logo" size={80} />
+        </motion.div>
+        
+        <motion.h1 
+          className="game-title"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <span className="title-word">Candy</span>
+          <span className="title-word">Crush</span>
+        </motion.h1>
+        
+        <motion.p 
+          className="game-subtitle"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          Match 3 or more candies to score points!
+        </motion.p>
+        
+        <motion.div 
+          className="candy-icons"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
+          {['red', 'blue', 'green', 'yellow', 'purple', 'orange'].map((color, index) => (
+            <motion.div 
+              key={color}
+              className={`candy-icon ${color}`}
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ 
+                delay: 0.8 + index * 0.1,
+                type: 'spring',
+                stiffness: 300,
+                damping: 15
+              }}
+            />
+          ))}
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.2 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
           <Button 
             onClick={onStart}
-            className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-xl rounded-lg shadow-lg transition-all duration-300 hover:shadow-red-500/50"
+            className="start-button"
           >
-            {gameOver ? 'PLAY AGAIN' : 'START GAME'}
+            Play Now
           </Button>
         </motion.div>
-
-        <div className="mt-12 text-sm text-gray-400">
-          <p className="mb-2">Controls:</p>
-          <p>Arrow Keys or WASD to move</p>
-          <p>SPACE to jump</p>
-          <p>F to fire repulsor blast</p>
-        </div>
+        
+        <motion.div 
+          className="instructions"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4 }}
+        >
+          <h3>How to Play:</h3>
+          <ul>
+            <li>Swap adjacent candies to match 3 or more</li>
+            <li>Match 4 candies to create special candies</li>
+            <li>Reach the target score to advance to the next level</li>
+          </ul>
+        </motion.div>
       </motion.div>
     </div>
   )

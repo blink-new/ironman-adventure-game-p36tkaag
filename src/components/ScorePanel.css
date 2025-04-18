@@ -1,0 +1,144 @@
+
+.score-panel {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 15px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.level-info {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+.level-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.level-icon {
+  color: #fff;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8));
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.stat-item:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  margin-bottom: 5px;
+  padding: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.score-icon {
+  color: #f1c40f;
+}
+
+.target-icon {
+  color: #3498db;
+}
+
+.moves-icon {
+  color: #e74c3c;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.progress-bar {
+  height: 12px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 100%);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.progress-percentage {
+  font-size: 0.8rem;
+  color: #666;
+  text-align: right;
+}
+
+/* Responsive design */
+@media (max-width: 500px) {
+  .score-panel {
+    padding: 10px;
+  }
+  
+  .level-badge {
+    font-size: 1rem;
+    padding: 6px 12px;
+  }
+  
+  .stat-value {
+    font-size: 1.2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.8rem;
+  }
+}

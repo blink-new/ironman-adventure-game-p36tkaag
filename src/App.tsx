@@ -1,74 +1,77 @@
 
-import { useEffect, useState } from 'react'
-import GameContainer from './components/GameContainer'
+import { useState, useEffect } from 'react'
+import GameBoard from './components/GameBoard'
+import ScorePanel from './components/ScorePanel'
+import GameOverModal from './components/GameOverModal'
 import StartScreen from './components/StartScreen'
 import './App.css'
 
 function App() {
   const [gameStarted, setGameStarted] = useState(false)
   const [score, setScore] = useState(0)
-  const [lives, setLives] = useState(3)
+  const [moves, setMoves] = useState(20)
   const [gameOver, setGameOver] = useState(false)
+  const [level, setLevel] = useState(1)
+  const [targetScore, setTargetScore] = useState(1000)
 
   const startGame = () => {
     setGameStarted(true)
     setScore(0)
-    setLives(3)
+    setMoves(20)
     setGameOver(false)
+    setLevel(1)
+    setTargetScore(1000)
   }
 
-  const handleScoreUpdate = (newScore: number) => {
-    setScore(newScore)
+  const handleScoreUpdate = (points: number) => {
+    setScore(prev => prev + points)
   }
 
-  const handleLivesUpdate = (newLives: number) => {
-    setLives(newLives)
-    if (newLives <= 0) {
+  const handleMoveUsed = () => {
+    setMoves(prev => prev - 1)
+  }
+
+  useEffect(() => {
+    if (moves <= 0) {
       setGameOver(true)
     }
-  }
+  }, [moves])
 
-  const handleGameOver = () => {
-    setGameOver(true)
-  }
-
-  // Add a key listener for F key to prevent default browser behavior
   useEffect(() => {
-    const preventDefaultForGameKeys = (e: KeyboardEvent) => {
-      // Prevent default for game control keys
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'f', 'F', ' '].includes(e.key)) {
-        e.preventDefault()
-      }
+    if (score >= targetScore && !gameOver) {
+      // Level completed
+      setLevel(prev => prev + 1)
+      setTargetScore(prev => Math.floor(prev * 1.5))
+      setMoves(prev => prev + 10)
     }
-    
-    window.addEventListener('keydown', preventDefaultForGameKeys)
-    
-    return () => {
-      window.removeEventListener('keydown', preventDefaultForGameKeys)
-    }
-  }, [])
+  }, [score, targetScore, gameOver])
 
   return (
-    <div className="game-app">
-      {!gameStarted || gameOver ? (
-        <StartScreen 
-          onStart={startGame} 
-          score={score} 
-          gameOver={gameOver} 
-        />
+    <div className="candy-app">
+      {!gameStarted ? (
+        <StartScreen onStart={startGame} />
       ) : (
-        <div className="game-wrapper">
-          <div className="game-ui">
-            <div className="game-stats">
-              <div className="score">Score: {score}</div>
-              <div className="lives">Lives: {lives}</div>
-            </div>
-          </div>
-          <GameContainer 
-            onScoreUpdate={handleScoreUpdate}
-            onLivesUpdate={handleLivesUpdate}
-            onGameOver={handleGameOver}
+        <div className="game-container">
+          <ScorePanel 
+            score={score} 
+            moves={moves} 
+            level={level} 
+            targetScore={targetScore} 
           />
+          <GameBoard 
+            onScoreUpdate={handleScoreUpdate} 
+            onMoveUsed={handleMoveUsed}
+            gameOver={gameOver}
+            level={level}
+          />
+          {gameOver && (
+            <GameOverModal 
+              score={score} 
+              onRestart={startGame} 
+              level={level}
+              victory={score >= targetScore}
+            />
+          )}
         </div>
       )}
     </div>
